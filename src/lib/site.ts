@@ -1,6 +1,6 @@
 export const studio = {
   name: 'Suzzy Alves Fotografia',
-  phone: '5511995649843',
+  phone: '+55 (11) 99564-9843',
   street: 'Rua Ângelo Roberto Orsomarso, 23',
   neighborhood: 'Jardim Nova Cidade',
   city: 'Guarulhos–SP',
@@ -15,5 +15,5 @@ export function whatsappLink(category = '', offer = false) {
     ? `Olá, Suzzy! Vi a oferta no seu site e quero pedir os 5% de desconto para agendar ${session}.`
     : `Olá, Suzzy! Gostaria de agendar ${session}. Quais datas estão disponíveis?`;
 
-  return `https://wa.me/${studio.phone}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${studio.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
 }

@@ -30,5 +30,5 @@ Para publicar, execute `npm ci` e `npm run build` na hospedagem e use `dist/` co
 ## Atualizar conteúdo
 
 - **Fotos.** Salve as imagens em WebP em `src/assets/ensaios/<categoria>/`, com nomes numerados como `01.webp` e `02.webp`. A galeria segue essa ordem e o carrossel mostra as primeiras quatro fotos de cada álbum. Para adicionar uma categoria, registre seu nome e o slug da pasta em [`src/lib/albums.ts`](src/lib/albums.ts).
-- **Contato e localização.** Atualize o telefone, o endereço, os horários e as coordenadas em [`src/lib/site.ts`](src/lib/site.ts). O telefone usa o formato internacional com apenas dígitos. As coordenadas definem o pino e o destino do botão “Como chegar”.
+- **Contato e localização.** Atualize o telefone, o endereço, os horários e as coordenadas em [`src/lib/site.ts`](src/lib/site.ts). Inclua o código do país e o DDD no telefone. As coordenadas definem o pino e o destino do botão “Como chegar”.
 - **Oferta de 5%.** A oferta aparece uma vez por sessão da aba. No desktop, o gatilho é a saída do ponteiro pelo topo da página. No celular, é a rolagem de volta após visualizar o portfólio. A pessoa pede o desconto pelo WhatsApp, e a Suzzy o aplica na confirmação da reserva. Os gatilhos e os textos da oferta estão em [`src/components/Offer.astro`](src/components/Offer.astro) e a mensagem do WhatsApp em [`src/lib/site.ts`](src/lib/site.ts).

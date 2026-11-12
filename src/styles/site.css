@@ -382,13 +382,21 @@ html:has(.gallery-page) { scroll-behavior: auto; }
 }
 .studio-details h3 { font: 600 .73rem/1.5 var(--body); color: var(--ink); letter-spacing: .095em; text-transform: uppercase; margin: 0 0 .3rem; }
 .studio-actions { margin-top: 1.25rem; gap: .5rem 1rem; }
-.studio-portrait {
-  width: 100%;
-  height: auto;
+.studio-phone { font-size: .8rem; }
+.studio-portraits {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   aspect-ratio: 2.22;
-  object-fit: cover;
-  object-position: center 38%;
+  gap: 1px;
   border-top: 1px solid #bbc3ae;
+  background: #bbc3ae;
+}
+.studio-portraits img {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: 59% 36%;
 }
 .map-frame { display: grid; min-height: 22rem; padding: clamp(.45rem, 1vw, .75rem); background: var(--forest); }
 .studio-map { display: block; width: 100%; height: 100%; border: 0; background: var(--sage); }
