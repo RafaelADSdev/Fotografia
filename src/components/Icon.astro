@@ -1,0 +1,8 @@
+---
+interface Props {
+  name: 'arrow' | 'diagonal' | 'left' | 'right' | 'pause' | 'play' | 'close';
+}
+
+const { name } = Astro.props;
+---
+<span class:list={['icon', `icon-${name}`]} aria-hidden="true"></span>

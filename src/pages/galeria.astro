@@ -1,0 +1,44 @@
+---
+import { Image } from 'astro:assets';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import Icon from '../components/Icon.astro';
+import { albums } from '../lib/albums';
+import { studio } from '../lib/site';
+---
+<SiteLayout title={`Galeria | ${studio.name}`} description="Fotos dos ensaios da Suzzy Alves Fotografia, em Guarulhos.">
+  <div class="shell gallery-page">
+    <a href="/#ensaios" class="text-link back-link"><Icon name="left" /> Voltar aos ensaios</a>
+    <h1>Galeria</h1>
+    {albums.map((album) => (
+      <section class="gallery-album" id={album.slug} aria-labelledby={`${album.slug}-title`}>
+        <h2 id={`${album.slug}-title`} data-portfolio-view data-gallery-label={album.label}>{album.label}</h2>
+        <div class="gallery-grid">
+          {album.photos.map((photo, index) => (
+            <figure class="gallery-print" data-scroll-reveal>
+              <Image
+                src={photo}
+                alt={`Foto ${index + 1} do ensaio de ${album.label}`}
+                widths={[380, 640, 960].filter((width) => width <= photo.width)}
+                sizes="(min-width: 76rem) 390px, (min-width: 58rem) 31vw, (min-width: 33rem) 46vw, 92vw"
+                loading="lazy"
+              />
+            </figure>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</SiteLayout>
+
+<script>
+  import { setBookingCategory } from '../scripts/booking';
+
+  function selectAlbumFromHash() {
+    const album = document.getElementById(window.location.hash.slice(1));
+    const label = album?.querySelector<HTMLElement>('[data-gallery-label]')?.dataset.galleryLabel;
+    setBookingCategory(label ?? '');
+  }
+
+  selectAlbumFromHash();
+  window.addEventListener('hashchange', selectAlbumFromHash);
+</script>

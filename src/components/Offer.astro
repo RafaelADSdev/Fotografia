@@ -1,0 +1,101 @@
+---
+import Icon from './Icon.astro';
+import { whatsappLink } from '../lib/site';
+
+const link = whatsappLink('', true);
+---
+<dialog class="offer-dialog" id="oferta" aria-labelledby="offer-title" aria-describedby="offer-description">
+  <button type="button" class="icon-button offer-close" aria-label="Fechar oferta" data-dismiss-offer autofocus><Icon name="close" /></button>
+  <h2 id="offer-title"><em>5%</em> no seu ensaio</h2>
+  <p id="offer-description">Peça agora pelo WhatsApp e ganhe o desconto ao confirmar a reserva.</p>
+  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir 5% pelo WhatsApp <Icon name="diagonal" /></a>
+</dialog>
+<aside class="mobile-offer" id="oferta-celular" aria-label="Oferta de 5%" inert hidden>
+  <p>5% no seu ensaio</p>
+  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir 5% pelo WhatsApp <Icon name="diagonal" /></a>
+  <button type="button" class="icon-button offer-close" aria-label="Fechar oferta" data-dismiss-offer><Icon name="close" /></button>
+</aside>
+<span class="visually-hidden" aria-live="polite" data-offer-announcement></span>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#oferta');
+  const banner = document.querySelector<HTMLElement>('#oferta-celular');
+  if (dialog && banner) initOffer(dialog, banner);
+
+  function initOffer(modal: HTMLDialogElement, mobileBanner: HTMLElement) {
+    const storageKey = 'suzzy:offer-seen';
+    const touch = window.matchMedia('(hover: none), (pointer: coarse)');
+    let handled = false;
+    try {
+      handled = sessionStorage.getItem(storageKey) === '1';
+    } catch {
+      // The offer can still run once on the current page.
+    }
+    if (handled) return;
+
+    function markHandled() {
+      handled = true;
+      try {
+        sessionStorage.setItem(storageKey, '1');
+      } catch {
+        // Storage can be disabled by the browser.
+      }
+    }
+
+    function dismiss() {
+      if (modal.open) modal.close();
+      mobileBanner.inert = true;
+      mobileBanner.hidden = true;
+    }
+
+    for (const button of document.querySelectorAll('[data-dismiss-offer]')) {
+      button.addEventListener('click', dismiss);
+    }
+    for (const link of document.querySelectorAll('[data-booking], [data-offer-link]')) {
+      link.addEventListener('click', () => {
+        markHandled();
+        dismiss();
+      });
+    }
+
+    document.addEventListener('pointerout', (event) => {
+      if (handled || touch.matches || document.hidden) return;
+      if (event.pointerType === 'mouse' && event.relatedTarget === null && event.clientY <= 3) {
+        modal.showModal();
+        markHandled();
+      }
+    });
+
+    const portfolio = document.querySelectorAll('[data-portfolio-view]');
+    if (!portfolio.length) return;
+
+    let sawPortfolio = false;
+    let furthestScroll = 0;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        sawPortfolio = true;
+        furthestScroll = window.scrollY;
+        observer.disconnect();
+      }
+    });
+    for (const element of portfolio) observer.observe(element);
+
+    function checkScroll() {
+      if (handled) {
+        window.removeEventListener('scroll', checkScroll);
+        return;
+      }
+      if (!touch.matches || !sawPortfolio || document.hidden) return;
+      furthestScroll = Math.max(furthestScroll, window.scrollY);
+      if (furthestScroll - window.scrollY >= 200) {
+        mobileBanner.inert = false;
+        mobileBanner.hidden = false;
+        markHandled();
+        const announcement = document.querySelector('[data-offer-announcement]');
+        if (announcement) announcement.textContent = 'Oferta de 5% disponível no fim da página.';
+        window.removeEventListener('scroll', checkScroll);
+      }
+    }
+    window.addEventListener('scroll', checkScroll, { passive: true });
+  }
+</script>

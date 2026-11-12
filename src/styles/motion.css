@@ -1,0 +1,68 @@
+:root {
+  --motion-out: cubic-bezier(.22, .7, .24, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-header { view-transition-name: site-header; }
+  ::view-transition-group(site-header), ::view-transition-new(site-header) { animation: none; }
+  ::view-transition-old(site-header) { display: none; }
+  ::view-transition-group(root) { animation-duration: 220ms; }
+  ::view-transition-old(root) { animation: 170ms var(--motion-out) both page-out; }
+  ::view-transition-new(root) { animation: 220ms var(--motion-out) both page-in; }
+
+  .hero-portrait { --entry-offset: 14px; animation: settle 640ms var(--motion-out) backwards; }
+  .hero-copy h1 { --entry-offset: 15px; animation: settle 570ms var(--motion-out) 35ms backwards; }
+  .hero-copy p { animation: settle 500ms var(--motion-out) 100ms backwards; }
+  .hero-actions { animation: settle 450ms var(--motion-out) 150ms backwards; }
+  .is-revealed { animation: settle 500ms var(--motion-out) backwards; }
+  .gallery-print.is-revealed { --entry-offset: 8px; animation-duration: 400ms; }
+  .is-revealed:focus-within, .hero-actions:focus-within { animation: none; }
+
+  .button, .icon-button { transition: transform 170ms var(--motion-out); }
+  .button:active:not(:focus-visible), .icon-button:active:not(:focus-visible) { transform: scale(.975); }
+  .button .icon, .text-link .icon { transition: translate 210ms var(--motion-out); }
+  .carousel-positions button::after { transition: transform 220ms var(--motion-out); }
+
+  @media (hover: hover) {
+    .button:hover .icon-diagonal, .text-link:hover .icon-diagonal { translate: 2px -2px; }
+    .text-link:hover .icon-arrow { translate: 3px 0; }
+    .text-link:hover .icon-left { translate: -3px 0; }
+  }
+
+  .offer-dialog, .mobile-offer {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 160ms var(--motion-out), transform 160ms var(--motion-out);
+  }
+  .offer-dialog[open], .mobile-offer:not([hidden]) {
+    opacity: 1;
+    transform: none;
+    transition-duration: 300ms;
+  }
+  .offer-dialog::backdrop { opacity: 0; transition: opacity 160ms var(--motion-out); }
+  .offer-dialog[open]::backdrop { opacity: 1; transition-duration: 260ms; }
+
+  @supports (transition-behavior: allow-discrete) {
+    .offer-dialog, .offer-dialog::backdrop {
+      transition-property: opacity, transform, display, overlay;
+      transition-behavior: normal, normal, allow-discrete, allow-discrete;
+    }
+    .mobile-offer { transition-property: opacity, transform, display; transition-behavior: normal, normal, allow-discrete; }
+  }
+
+  @starting-style {
+    .offer-dialog[open], .mobile-offer:not([hidden]) { opacity: 0; transform: translateY(14px); }
+    .offer-dialog[open]::backdrop { opacity: 0; }
+  }
+
+  @keyframes settle {
+    from { opacity: .48; transform: translateY(var(--entry-offset, 10px)); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes page-out { from { opacity: 1; } to { opacity: .75; } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
