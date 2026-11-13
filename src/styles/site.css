@@ -403,6 +403,10 @@ html:has(.gallery-page) { scroll-behavior: auto; }
 
 .site-footer { border-top: 1px solid var(--line); }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; padding-block: 1.6rem; gap: 1.25rem; }
+.footer-links { display: flex; flex-wrap: wrap; gap: .25rem 1.4rem; }
+.footer-credit { background: var(--forest); color: var(--light); }
+.footer-credit-inner { display: flex; align-items: center; justify-content: space-between; gap: .85rem 1.5rem; padding-block: .9rem; font-size: .8rem; }
+.footer-credit img { width: 7rem; height: auto; }
 
 .offer-dialog {
   position: fixed;
@@ -487,5 +491,6 @@ html:has(.gallery-page) { scroll-behavior: auto; }
   .carousel-arrows .icon-button { width: 2.5rem; height: 2.5rem; }
   .gallery-grid { column-count: 1; }
   .footer-inner { flex-wrap: wrap; }
+  .footer-credit-inner { flex-wrap: wrap; }
   .mobile-offer .button .icon { display: none; }
 }

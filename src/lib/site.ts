@@ -1,6 +1,7 @@
 export const studio = {
   name: 'Suzzy Alves Fotografia',
   phone: '+55 (11) 99564-9843',
+  instagram: 'fotografia_suzzyalves',
   street: 'Rua Ângelo Roberto Orsomarso, 23',
   neighborhood: 'Jardim Nova Cidade',
   city: 'Guarulhos–SP',
@@ -8,6 +9,8 @@ export const studio = {
   latitude: -23.4460749,
   longitude: -46.407651,
 };
+
+export const instagramUrl = `https://www.instagram.com/${studio.instagram}/`;
 
 export function whatsappLink(category = '', offer = false) {
   const session = category ? `um ensaio de ${category}` : 'um ensaio';
