@@ -38,7 +38,12 @@ Para publicar, execute `npm ci` e `npm run build` na hospedagem e use `dist/` co
 
 <table>
   <tr>
-    <td width="150"><img src="./public/tekton-logo.png" width="120" alt="Tekton Labs"></td>
-    <td><strong>Desenvolvimento por Tekton Labs</strong><br>Projeto institucional para Suzzy Alves Fotografia.</td>
+    <td width="150">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./public/vercuno-branco-roxo.png">
+        <img src="./public/vercuno-grafite-roxo.png" width="120" alt="Vercuno">
+      </picture>
+    </td>
+    <td><strong>Feito por Vercuno</strong><br>Projeto institucional para Suzzy Alves Fotografia.</td>
   </tr>
 </table>
