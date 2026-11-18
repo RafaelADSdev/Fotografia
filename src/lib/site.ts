@@ -15,7 +15,7 @@ export const instagramUrl = `https://www.instagram.com/${studio.instagram}/`;
 export function whatsappLink(category = '', offer = false) {
   const session = category ? `um ensaio de ${category}` : 'um ensaio';
   const message = offer
-    ? `Olá, Suzzy! Vi a oferta no seu site e quero pedir os 5% de desconto para agendar ${session}.`
+    ? `Olá, Suzzy! Vi a oferta no seu site e gostaria de agendar ${session} com as 5 fotos extras.`
     : `Olá, Suzzy! Gostaria de agendar ${session}. Quais datas estão disponíveis?`;
 
   return `https://wa.me/${studio.phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;

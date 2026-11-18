@@ -3,17 +3,21 @@ import Icon from './Icon.astro';
 import { whatsappLink } from '../lib/site';
 
 const link = whatsappLink('', true);
+const terms = 'Você ganha as fotos ao confirmar a reserva do ensaio.';
 ---
 <dialog class="offer-dialog" id="oferta" aria-labelledby="offer-title" aria-describedby="offer-description">
   <button type="button" class="icon-button offer-close" aria-label="Fechar oferta" data-dismiss-offer autofocus><Icon name="close" /></button>
-  <h2 id="offer-title"><em>5%</em> no seu ensaio</h2>
-  <p id="offer-description">Peça agora pelo WhatsApp e ganhe o desconto ao confirmar a reserva.</p>
-  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir 5% pelo WhatsApp <Icon name="diagonal" /></a>
+  <h2 id="offer-title">5 fotos extras</h2>
+  <p id="offer-description">{terms}</p>
+  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir pelo WhatsApp <Icon name="diagonal" /></a>
 </dialog>
-<aside class="mobile-offer" id="oferta-celular" aria-label="Oferta de 5%" inert hidden>
-  <p>5% no seu ensaio</p>
-  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir 5% pelo WhatsApp <Icon name="diagonal" /></a>
+<aside class="mobile-offer" id="oferta-celular" aria-labelledby="mobile-offer-title" inert hidden>
+  <div>
+    <h2 id="mobile-offer-title">5 fotos extras</h2>
+    <p>{terms}</p>
+  </div>
   <button type="button" class="icon-button offer-close" aria-label="Fechar oferta" data-dismiss-offer><Icon name="close" /></button>
+  <a class="button button-primary" href={link} data-offer-link target="_blank" rel="noopener">Pedir pelo WhatsApp <Icon name="diagonal" /></a>
 </aside>
 <span class="visually-hidden" aria-live="polite" data-offer-announcement></span>
 
@@ -33,6 +37,11 @@ const link = whatsappLink('', true);
     }
     if (handled) return;
 
+    const bookingLink = document.querySelector<HTMLElement>('[data-booking]');
+    const offerSize = new ResizeObserver(() => {
+      document.documentElement.style.setProperty('--mobile-offer-height', `${mobileBanner.offsetHeight}px`);
+    });
+
     function markHandled() {
       handled = true;
       try {
@@ -43,9 +52,12 @@ const link = whatsappLink('', true);
     }
 
     function dismiss() {
+      const focusInBanner = mobileBanner.contains(document.activeElement);
       if (modal.open) modal.close();
       mobileBanner.inert = true;
       mobileBanner.hidden = true;
+      offerSize.disconnect();
+      if (focusInBanner) bookingLink?.focus({ preventScroll: true });
     }
 
     for (const button of document.querySelectorAll('[data-dismiss-offer]')) {
@@ -90,9 +102,10 @@ const link = whatsappLink('', true);
       if (furthestScroll - window.scrollY >= 200) {
         mobileBanner.inert = false;
         mobileBanner.hidden = false;
+        offerSize.observe(mobileBanner);
         markHandled();
         const announcement = document.querySelector('[data-offer-announcement]');
-        if (announcement) announcement.textContent = 'Oferta de 5% disponível no fim da página.';
+        if (announcement) announcement.textContent = 'Oferta de 5 fotos extras disponível no fim da página.';
         window.removeEventListener('scroll', checkScroll);
       }
     }

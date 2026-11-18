@@ -34,6 +34,7 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
             <div class="carousel-image" data-carousel-image>
               <Image src={firstPhoto} alt={`Foto 1 do ensaio de ${firstAlbum.label}`} widths={photoWidths(firstPhoto.width)} sizes={photoSizes} loading="lazy" draggable="false" />
             </div>
+            <p class="carousel-status visually-hidden" role="status" data-carousel-status></p>
             <div class="carousel-arrows" data-carousel-ui hidden>
               <button class="icon-button" type="button" aria-label="Foto anterior" data-slide-step="-1"><Icon name="left" /></button>
               <button class="icon-button" type="button" aria-label="Próxima foto" data-slide-step="1"><Icon name="right" /></button>
@@ -51,11 +52,10 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
               <Icon name="play" />
             </button>
           </div>
-          <span class="visually-hidden" aria-live="polite" data-carousel-status></span>
         </div>
         <div class="portfolio-actions">
-          <a class="button button-primary" href={whatsappLink(firstAlbum.label)} data-booking data-carousel-booking target="_blank" rel="noopener">Agendar <Icon name="diagonal" /></a>
-          <a class="text-link" href={`/galeria/#${firstAlbum.slug}`} data-gallery-link>Quero ver mais <Icon name="arrow" /></a>
+          <a class="button button-primary" href={whatsappLink(firstAlbum.label)} data-booking data-carousel-booking target="_blank" rel="noopener">Agendar no WhatsApp <Icon name="diagonal" /></a>
+          <a class="text-link" href={`/galeria/#${firstAlbum.slug}`} data-gallery-link>Ver álbum completo <Icon name="arrow" /></a>
         </div>
       </div>
       {previews.flatMap((album) => album.photos.map((photo, index) => (
@@ -97,6 +97,28 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
     let timer: number | undefined;
     let requestedFrame = 0;
     let swipe: { id: number; x: number; y: number } | undefined;
+    const photoError = 'A foto não carregou. Use as setas para ver outra.';
+
+    function setStatus(message: string, visible = false) {
+      status!.classList.toggle('visually-hidden', !visible);
+      status!.textContent = message;
+    }
+
+    function setPosition(position: number, count: number) {
+      counter!.textContent = `${position} / ${count}`;
+      positions.forEach((button, offset) => {
+        button.hidden = offset >= count;
+        if (offset === position - 1) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+    }
+
+    const initialPhoto = image.querySelector('img');
+    function onInitialPhotoError() {
+      if (!requestedFrame) setStatus(photoError, true);
+    }
+    initialPhoto?.addEventListener('error', onInitialPhotoError, { once: true });
+    if (initialPhoto?.complete && !initialPhoto.naturalWidth) onInitialPhotoError();
 
     function slidesFor(button: HTMLButtonElement) {
       return templates.filter((slide) => slide.dataset.slide === button.dataset.album);
@@ -124,10 +146,15 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
       const request = ++requestedFrame;
       const position = index + 1;
       const count = slides.length;
+      const loading = announce ? window.setTimeout(() => {
+        if (request !== requestedFrame) return;
+        setPosition(position, count);
+        setStatus('Carregando foto…', true);
+      }, 120) : undefined;
 
       function render() {
         if (request !== requestedFrame) return;
-        if (motion.matches || !duration) {
+        if (motion.matches || !duration || !status!.classList.contains('visually-hidden')) {
           image!.replaceChildren(fragment);
         } else {
           const outgoing = [...image!.children];
@@ -139,18 +166,15 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
           ], { duration, easing });
           fade.onfinish = () => outgoing.forEach((frame) => frame.remove());
         }
-        counter!.textContent = `${position} / ${count}`;
-        positions.forEach((button, offset) => {
-          button.hidden = offset >= count;
-          if (offset === position - 1) button.setAttribute('aria-current', 'true');
-          else button.removeAttribute('aria-current');
-        });
-        if (announce) status!.textContent = `${selected.dataset.label}, foto ${position} de ${count}`;
+        setPosition(position, count);
+        setStatus(announce ? `${selected.dataset.label}, foto ${position} de ${count}` : '');
       }
 
       void photo.decode().then(render, () => {
-        if (request === requestedFrame && announce) status!.textContent = 'A foto não carregou. Tente outra.';
-      });
+        if (request !== requestedFrame) return;
+        setPosition(position, count);
+        setStatus(photoError, true);
+      }).finally(() => window.clearTimeout(loading));
     }
 
     for (const button of choices) {
@@ -176,7 +200,7 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
 
     for (const [offset, button] of positions.entries()) {
       button.addEventListener('click', (event) => {
-        if (offset === index) return;
+        if (offset === index && status.classList.contains('visually-hidden')) return;
         showSlide(offset, { duration: event.detail ? 320 : 0, direction: Math.sign(offset - index) });
         syncRotation();
       });
