@@ -15,7 +15,7 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
 {firstAlbum && firstPhoto && (
   <section class="portfolio" id="ensaios" aria-labelledby="ensaios-title" data-carousel>
     <div class="shell portfolio-inner">
-      <h2 id="ensaios-title">Ensaios</h2>
+      <h2 id="ensaios-title" data-scroll-reveal>Ensaios</h2>
       <div class="portfolio-grid">
         <div class="album-options" role="group" aria-label="Selecionar tipo de ensaio" data-scroll-reveal data-carousel-ui hidden>
           {previews.filter(({ featured }) => featured).map((album) => (
@@ -53,7 +53,7 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
             </button>
           </div>
         </div>
-        <div class="portfolio-actions">
+        <div class="portfolio-actions" data-scroll-reveal>
           <a class="button button-primary" href={whatsappLink(firstAlbum.label)} data-booking data-carousel-booking target="_blank" rel="noopener">Agendar no WhatsApp <Icon name="diagonal" /></a>
           <a class="text-link" href={`/galeria/#${firstAlbum.slug}`} data-gallery-link>Ver álbum completo <Icon name="arrow" /></a>
         </div>
@@ -154,17 +154,25 @@ const photoWidths = (width: number) => [400, 720, 1080, 1440].filter((size) => s
 
       function render() {
         if (request !== requestedFrame) return;
-        if (motion.matches || !duration || !status!.classList.contains('visually-hidden')) {
+        if (motion.matches || !duration) {
           image!.replaceChildren(fragment);
         } else {
-          const outgoing = [...image!.children];
-          outgoing.forEach((frame) => frame.setAttribute('aria-hidden', 'true'));
-          image!.append(fragment);
+          const outgoing = status!.classList.contains('visually-hidden') ? image!.lastElementChild : null;
+          if (outgoing) {
+            image!.querySelectorAll('[aria-hidden="true"]').forEach((frame) => frame.remove());
+            outgoing.setAttribute('aria-hidden', 'true');
+            image!.append(fragment);
+          } else {
+            image!.replaceChildren(fragment);
+          }
+          const x = direction * 24;
+          const y = announce && !direction ? 12 : 0;
+          const scale = announce ? 1.04 : 1.018;
           const fade = photo!.animate([
-            { opacity: 0, transform: `translateX(${direction * 9}px) scale(1.018)` },
+            { opacity: outgoing ? 0 : .3, transform: `translate(${x}px, ${y}px) scale(${scale})` },
             { opacity: 1, transform: 'none' },
           ], { duration, easing });
-          fade.onfinish = () => outgoing.forEach((frame) => frame.remove());
+          fade.onfinish = () => outgoing?.remove();
         }
         setPosition(position, count);
         setStatus(announce ? `${selected.dataset.label}, foto ${position} de ${count}` : '');

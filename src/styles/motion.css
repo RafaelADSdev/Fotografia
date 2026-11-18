@@ -10,23 +10,49 @@
   ::view-transition-old(root) { animation: 170ms var(--motion-out) both page-out; }
   ::view-transition-new(root) { animation: 220ms var(--motion-out) both page-in; }
 
-  .hero-portrait { --entry-offset: 14px; animation: settle 640ms var(--motion-out) backwards; }
-  .hero-copy h1 { --entry-offset: 15px; animation: settle 570ms var(--motion-out) 35ms backwards; }
-  .hero-copy p { animation: settle 500ms var(--motion-out) 100ms backwards; }
-  .hero-actions { animation: settle 450ms var(--motion-out) 150ms backwards; }
+  .hero-portrait::before, .portrait-frame {
+    --entry-scale: .95;
+    transform-origin: center 75%;
+    animation: settle 810ms var(--motion-out) backwards;
+  }
+  .portrait-frame { animation-delay: 85ms; }
+  .hero-portrait img {
+    transform-origin: center bottom;
+    animation: portrait-focus 880ms var(--motion-out) 95ms backwards;
+  }
+  .hero-copy h1 { --entry-offset: 22px; animation: settle 640ms var(--motion-out) 145ms backwards; }
+  .hero-copy p { animation: settle 510ms var(--motion-out) 225ms backwards; }
+  .hero-actions { animation: settle 460ms var(--motion-out) 290ms backwards; }
+
   .is-revealed { animation: settle 500ms var(--motion-out) backwards; }
+  .portfolio h2.is-revealed::after {
+    transform-origin: left;
+    animation: draw-rule 850ms var(--motion-out) 90ms backwards;
+  }
+  .carousel-view.is-revealed, .instagram-panel.is-revealed {
+    --entry-offset: 23px;
+    --entry-scale: .98;
+    animation-duration: 700ms;
+  }
+  .album-options.is-revealed, .instagram-panel.is-revealed { animation-delay: 90ms; }
+  .portfolio-actions.is-revealed { animation-delay: 140ms; }
+  .instagram-intro.is-revealed { --entry-offset: 19px; animation-duration: 620ms; }
   .gallery-print.is-revealed { --entry-offset: 8px; animation-duration: 400ms; }
   .is-revealed:focus-within, .hero-actions:focus-within { animation: none; }
 
-  .button, .icon-button { transition: transform 170ms var(--motion-out); }
-  .button:active:not(:focus-visible), .icon-button:active:not(:focus-visible) { transform: scale(.975); }
-  .button .icon, .text-link .icon { transition: translate 210ms var(--motion-out); }
+  :is(.button, .icon-button, .album-options button) { transition: transform 170ms var(--motion-out); }
+  :is(.button, .icon-button, .album-options button):active:not(:focus-visible) { transform: scale(.975); }
+  :is(.button, .text-link, .featured-album, .carousel-arrows button) .icon {
+    transition: translate 210ms var(--motion-out);
+  }
   .carousel-positions button::after { transition: transform 220ms var(--motion-out); }
+  .portfolio:has(:focus-visible) .carousel-positions button::after { transition: none; }
 
   @media (hover: hover) {
-    .button:hover .icon-diagonal, .text-link:hover .icon-diagonal { translate: 2px -2px; }
+    :is(.button, .text-link, .featured-album):hover .icon-diagonal { translate: 3px -3px; }
     .text-link:hover .icon-arrow { translate: 3px 0; }
-    .text-link:hover .icon-left { translate: -3px 0; }
+    :is(.text-link, .carousel-arrows button):hover .icon-left { translate: -3px 0; }
+    .carousel-arrows button:hover .icon-right { translate: 3px 0; }
   }
 
   .offer-dialog, .mobile-offer {
@@ -56,7 +82,15 @@
   }
 
   @keyframes settle {
-    from { opacity: .48; transform: translateY(var(--entry-offset, 10px)); }
+    from { opacity: .55; transform: translateY(var(--entry-offset, 10px)) scale(var(--entry-scale, 1)); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes portrait-focus {
+    from { opacity: .3; transform: translateY(26px) scale(.95); filter: blur(5px); }
+    to { opacity: 1; transform: none; filter: none; }
+  }
+  @keyframes draw-rule {
+    from { opacity: 0; transform: scaleX(.06); }
     to { opacity: 1; transform: none; }
   }
   @keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
